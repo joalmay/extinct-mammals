@@ -22,11 +22,13 @@ var mammalSchema = mongoose.Schema({
 
 var Mammal = mongoose.model('Mammal', mammalSchema);
 
+
 //Save to DB
-var extinted = new Mammal({ 
-    name: "New Mammal2",
-    type: "String2",
-    year_extinct: 2013 
+/*
+var extinted = new Mammal({
+  name: "New Mammal2",
+  type: "String2",
+  year_extinct: 2013 
   });
 
 extinted.save(function (err, extinted) {
@@ -34,7 +36,7 @@ extinted.save(function (err, extinted) {
   console.log(extinted);
 });
 
-
+*/
 
 //Express AP
 
@@ -53,21 +55,37 @@ app.configure(function (){
 });
 
 app.get('/', function(req, res) {
+  //Read from DB
+  Mammal.find(function (err, mammals) {
+    res.type('application/json');
+    res.json(mammals);
 
-//Read from DB
-Mammal.find(function (err, mammals) {
-
-  res.type('application/json');
-  res.json(mammals);
-
-  if (err) // TODO handle err
-  console.log("Error with "+mammals);
-});
-  
-
-
+    if (err) // TODO handle err
+      console.log("Error with "+mammals);
+  });
 });
 
+
+//Post
+ app.post('/', function(req, res) {
+
+  console.log(req.body);
+
+  var extinted = new Mammal({
+    name: req.body.name,
+    type: req.body.type,
+    year_extinct: req.body.year_extinct 
+  });
+
+  //Save in DB
+  extinted.save(function (err, extinted) {
+  if (err) // TODO handle the error
+  console.log(err, extinted);
+  });
+
+  //Express Send
+  res.send("Posted: " + extinted); 
+});
 
 app.listen(port);
 console.log('Listening on port '+port);
